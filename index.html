@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Portfólio</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #0f172a;
+    overflow: hidden;
+    color: white;
+  }
+
+  canvas { position: absolute; inset: 0; z-index: 0; }
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #2563eb, #25D366);
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  p {
+    z-index: 1;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-size: 1.4rem;
+    text-align: center;
+    font-weight: bold;
+    color: white; /* frase branca */
+  }
+
+  button, .whatsapp-btn {
+    z-index: 1;
+    margin: 10px;
+    padding: 15px 35px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button { background: linear-gradient(45deg, #2563eb, #1d4ed8); color: white; }
+  button:hover, .whatsapp-btn:hover { transform: scale(1.1); }
+  .whatsapp-btn { background: linear-gradient(45deg, #25D366, #1ebe5b); color: white; text-decoration: none; }
+
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 2;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    background: #020617;
+    padding: 25px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 900px;
+    max-height: 80vh;
+    overflow-y: auto;
+    text-align: center;
+  }
+
+  .close { position: absolute; top: 20px; right: 30px; font-size: 30px; cursor: pointer; }
+
+  .galeria {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+  }
+
+  .galeria img {
+    width: 100%;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+
+  .galeria img:hover { transform: scale(1.05); }
+
+  .zoom {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 3;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .zoom img { max-width: 90%; max-height: 90%; border-radius: 15px; }
+</style>
+</head>
+
+<body>
+
+<h1>Jhonny – Capoto</h1>
+<p>Fotos dos meus trabalhos</p>
+
+<button onclick="abrirProjetos()">Ver Projetos</button>
+<a href="https://wa.me/351913277076" target="_blank" class="whatsapp-btn">WhatsApp</a>
+
+<div id="modalTrabalhos" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="fecharProjetos()">×</span>
+    <h2>Meus Trabalhos</h2>
+
+    <div class="galeria" id="galeria">
+      <!-- Fotos vão aparecer automaticamente -->
+    </div>
+  </div>
+</div>
+
+<div id="zoom" class="zoom" onclick="fecharZoom()">
+  <img id="zoomImg">
+</div>
+
+<canvas id="sparkCanvas"></canvas>
+
+<script>
+  function abrirProjetos() { document.getElementById("modalTrabalhos").style.display = "flex"; }
+  function fecharProjetos() { document.getElementById("modalTrabalhos").style.display = "none"; }
+  function zoom(src) { document.getElementById("zoomImg").src = src; document.getElementById("zoom").style.display = "flex"; }
+  function fecharZoom() { document.getElementById("zoom").style.display = "none"; }
+
+  // FAÍSCAS
+  const canvas = document.getElementById("sparkCanvas");
+  const ctx = canvas.getContext("2d");
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  const sparks = Array.from({ length: 100 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2 + 1,
+    a: Math.random()
+  }));
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    sparks.forEach(s => {
+      s.y -= 0.2;
+      if(s.y < 0) s.y = canvas.height;
+      ctx.fillStyle = `rgba(255,255,255,${s.a})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  // GALERIA DE FOTOS
+  const fotos = [
+    "fts/6df186b1-d4d1-4e19-a14f-dcd8fb151fca.jpeg"
+  ];
+
+  const galeria = document.getElementById("galeria");
+  fotos.forEach(foto => {
+    const img = document.createElement("img");
+    img.src = foto;
+    img.onclick = () => zoom(foto);
+    galeria.appendChild(img);
+  });
+</script>
+
+</body>
+</html>
